@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'kotlin-kapt'
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -39,4 +41,12 @@ dependencies {
 
     //MPCharts
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.0-beta1'
+
+    //Room
+    implementation "androidx.room:room-runtime:2.0.0"
+    kapt "androidx.room:room-compiler:2.0.0"
+
+    //Anko
+    implementation 'org.jetbrains.anko:anko:0.10.7'
+
 }
