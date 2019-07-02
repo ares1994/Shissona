@@ -2,6 +2,13 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#2033DD</color>
+    <color name="colorAccent">#000000</color>
+    <color name="colorOne">#F44336</color>
+    <color name="colorTwo">#673AB7</color>
+    <color name="colorThree">#3F51B5</color>
+    <color name="colorFour">#4CAF50</color>
+    <color name="colorFive">#FFC107</color>
+    <color name="colorSix">#009688</color>
+    <color name="colorSeven">#E91E63</color>
     <color name="navigationColor">#5E5E5E</color>
 </resources>

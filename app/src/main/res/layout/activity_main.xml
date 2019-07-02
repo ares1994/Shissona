@@ -28,8 +28,7 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:background="@android:color/white"
-            app:itemIconTint="@color/colorPrimary"
-            app:itemTextColor="@color/navigationColor"
+            app:itemIconTint="@drawable/states_bottom_navigation"
             app:menu="@menu/bottom_navigation_menu"/>
 
 

@@ -38,18 +38,14 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-
         val items = ArrayList<Item>()
-        items.add(Item(2, "Ares"))
-        items.add(Item(2, "Ares"))
-        items.add(Item(2, "Ares"))
-        items.add(Item(2, "Ares"))
-        items.add(Item(2, "Ares"))
-        items.add(Item(2, "Ares"))
-        items.add(Item(2, "Ares"))
-        items.add(Item(2, "Ares"))
-        items.add(Item(2, "Ares"))
-        items.add(Item(2, "Ares"))
+        items.add(Item(R.drawable.ic_home_black_24dp, "Home"))
+        items.add(Item(R.drawable.ic_baseline_fastfood_24px_2, "Food"))
+        items.add(Item(R.drawable.ic_directions_bus_black_24dp, "Transport"))
+        items.add(Item(R.drawable.ic_person_black_24dp, "Health"))
+        items.add(Item(R.drawable.ic_phone_iphone_black_24dp, "Phone"))
+        items.add(Item(R.drawable.ic_directions_car_black_24dp, "Car"))
+        items.add(Item(R.drawable.ic_movie_black_24dp, "Entertainment"))
 
 
         Log.d("ares", "adapter about to be returned");
