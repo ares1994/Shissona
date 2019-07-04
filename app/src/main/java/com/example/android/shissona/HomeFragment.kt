@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.example.android.shissona.database.AppDatabase
 import com.example.android.shissona.database.Expense
 import com.example.android.shissona.database.ExpenseDao
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import org.jetbrains.anko.doAsync
@@ -23,6 +24,8 @@ import org.jetbrains.anko.support.v4.runOnUiThread
 class HomeFragment : Fragment() {
 
     private lateinit var dataSource: ExpenseDao
+    private lateinit var gridAdapter: GridAdapter
+    private var actualPosition: Int = -1
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,22 +45,34 @@ class HomeFragment : Fragment() {
         items.add(Item(R.drawable.ic_home_black_24dp, "Home"))
         items.add(Item(R.drawable.ic_baseline_fastfood_24px_2, "Food"))
         items.add(Item(R.drawable.ic_directions_bus_black_24dp, "Transport"))
-        items.add(Item(R.drawable.ic_person_black_24dp, "Health"))
-        items.add(Item(R.drawable.ic_phone_iphone_black_24dp, "Phone"))
+        items.add(Item(R.drawable.ic_person_black_24dp, "Personal"))
+        items.add(Item(R.drawable.ic_phone_iphone_black_24dp, "Gadgets"))
         items.add(Item(R.drawable.ic_directions_car_black_24dp, "Car"))
         items.add(Item(R.drawable.ic_movie_black_24dp, "Entertainment"))
+        items.add(Item(R.drawable.ic_location_on_black_24dp, "Travel"))
+        items.add(Item(R.drawable.ic_local_hospital_black_24dp, "Health"))
+        items.add(Item(R.drawable.ic_pets_black_24dp, "Pets"))
+        items.add(Item(R.drawable.ic_card_giftcard_black_24dp, "Gift"))
+        items.add(Item(R.drawable.ic_receipt_black_24dp, "Bills"))
 
 
         Log.d("ares", "adapter about to be returned");
-
+        gridAdapter =  GridAdapter(items, this@HomeFragment.requireActivity())
         view.itemGridView.apply {
-            adapter = GridAdapter(items, this@HomeFragment.requireActivity())
+            adapter = gridAdapter
             setOnItemClickListener { parent, view, position, id ->
-                val selectedItem = parent.getItemAtPosition(position)
+                actualPosition = position
+                Snackbar.make(this,"Position = $actualPosition", Snackbar.LENGTH_SHORT).show()
 
-            }
+           }
         }
+        view.expenseButton.setOnClickListener {
 
+            doAsync {
+            dataSource.insert(Expense(null, expenseEditText.text.toString().trim().toInt(),actualPosition,detailsEditText.text.toString().trim()))
+            }
+
+        }
 
     }
 

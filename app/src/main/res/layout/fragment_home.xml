@@ -32,6 +32,8 @@
         <com.google.android.material.textfield.TextInputEditText android:layout_width="match_parent"
                                                                  android:layout_height="wrap_content"
                                                                  android:inputType="number"
+                                                                 android:id="@+id/expenseEditText"
+                                                                 android:imeOptions="actionDone"
                                                                  android:hint="@string/enter_expense_amount"/>
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -44,9 +46,21 @@
                                                            app:layout_constraintTop_toBottomOf="@id/itemGridView">
         <com.google.android.material.textfield.TextInputEditText android:layout_width="match_parent"
                                                                  android:layout_height="wrap_content"
-                                                                 android:inputType="textMultiLine"
+                                                                 android:inputType="text"
+                                                                 android:id="@+id/detailsEditText"
+                                                                 android:imeOptions="actionDone"
                                                                  android:hint="@string/details"/>
     </com.google.android.material.textfield.TextInputLayout>
+
+    <Button android:layout_width="0dp" android:layout_height="wrap_content"
+            android:text="@string/add_expense"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/button_drawable"
+            app:layout_constraintLeft_toLeftOf="parent" app:layout_constraintRight_toRightOf="parent"
+            android:id="@+id/expenseButton"
+            app:layout_constraintTop_toBottomOf="@id/details_text_input_layout"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

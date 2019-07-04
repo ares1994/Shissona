@@ -10,5 +10,10 @@
     <color name="colorFive">#FFC107</color>
     <color name="colorSix">#009688</color>
     <color name="colorSeven">#E91E63</color>
+    <color name="colorEight">#2196F3</color>
+    <color name="colorNine">#D51D1D</color>
+    <color name="colorTen">#CDDC39</color>
+    <color name="colorEleven">#9C27B0</color>
+    <color name="colorTwelve">#E9761E</color>
     <color name="navigationColor">#5E5E5E</color>
 </resources>

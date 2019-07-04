@@ -40,6 +40,14 @@ data class GridAdapter(val itemList: List<Item>, val activity: Activity) : BaseA
             4 -> view.itemImage.setColorFilter(getColor(view.context, R.color.colorFive), PorterDuff.Mode.SRC_ATOP)
             5 -> view.itemImage.setColorFilter(getColor(view.context, R.color.colorSix), PorterDuff.Mode.SRC_ATOP)
             6 -> view.itemImage.setColorFilter(getColor(view.context, R.color.colorSeven), PorterDuff.Mode.SRC_ATOP)
+            7 -> view.itemImage.setColorFilter(getColor(view.context, R.color.colorEight), PorterDuff.Mode.SRC_ATOP)
+            8 -> view.itemImage.setColorFilter(getColor(view.context, R.color.colorNine), PorterDuff.Mode.SRC_ATOP)
+            9 -> view.itemImage.setColorFilter(getColor(view.context, R.color.colorTen), PorterDuff.Mode.SRC_ATOP)
+            10 -> view.itemImage.setColorFilter(getColor(view.context, R.color.colorEleven), PorterDuff.Mode.SRC_ATOP)
+            11 -> view.itemImage.setColorFilter(getColor(view.context, R.color.colorTwelve), PorterDuff.Mode.SRC_ATOP)
+
+
+
         }
 
         return view
