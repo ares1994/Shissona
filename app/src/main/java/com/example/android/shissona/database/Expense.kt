@@ -18,5 +18,8 @@ data class Expense(
     val expenseType: Int,
 
     @ColumnInfo
-    val description: String
+    val description: String,
+
+    @ColumnInfo
+    val entryTime: Long
 )

@@ -57,20 +57,31 @@ class HomeFragment : Fragment() {
 
 
         Log.d("ares", "adapter about to be returned");
-        gridAdapter =  GridAdapter(items, this@HomeFragment.requireActivity())
+        gridAdapter = GridAdapter(items, this@HomeFragment.requireActivity())
         view.itemGridView.apply {
             adapter = gridAdapter
             setOnItemClickListener { parent, view, position, id ->
                 actualPosition = position
-                Snackbar.make(this,"Position = $actualPosition", Snackbar.LENGTH_SHORT).show()
 
-           }
+
+            }
         }
         view.expenseButton.setOnClickListener {
 
             doAsync {
-            dataSource.insert(Expense(null, expenseEditText.text.toString().trim().toInt(),actualPosition,detailsEditText.text.toString().trim()))
+                dataSource.insert(
+                    Expense(
+                        null,
+                        expenseEditText.text.toString().trim().toInt(),
+                        actualPosition,
+                        detailsEditText.text.toString().trim(),
+                        System.currentTimeMillis()
+                    )
+                )
             }
+            Snackbar.make(view, "Expense Recorded", Snackbar.LENGTH_SHORT).show()
+            expenseEditText.setText("")
+            detailsEditText.setText("")
 
         }
 
