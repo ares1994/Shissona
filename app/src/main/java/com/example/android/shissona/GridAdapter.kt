@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.*
+import com.github.mikephil.charting.utils.ColorTemplate
 import kotlinx.android.synthetic.main.item_grid.view.*
 
 data class GridAdapter(val itemList: List<Item>, val activity: Activity) : BaseAdapter() {
@@ -30,6 +31,7 @@ data class GridAdapter(val itemList: List<Item>, val activity: Activity) : BaseA
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view = View.inflate(activity, R.layout.item_grid, null)
         view.itemText.text = itemList[position].name
+        ColorTemplate.COLORFUL_COLORS[0]
         view.itemImage.setImageResource(itemList[position].id)
 
         when (position) {

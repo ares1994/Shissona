@@ -67,6 +67,17 @@ class HomeFragment : Fragment() {
             }
         }
         view.expenseButton.setOnClickListener {
+            val detailsText: String = if (detailsEditText.text.isNullOrBlank()) {
+                "No details were entered for this expense"
+            } else {
+                detailsEditText.text.toString().trim()
+            }
+
+            if (expenseEditText.text.isNullOrBlank() || actualPosition == -1) {
+                Snackbar.make(it, "Enter Expense amount and select category ", Snackbar.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
 
             doAsync {
                 dataSource.insert(
@@ -74,7 +85,7 @@ class HomeFragment : Fragment() {
                         null,
                         expenseEditText.text.toString().trim().toInt(),
                         actualPosition,
-                        detailsEditText.text.toString().trim(),
+                        detailsText,
                         System.currentTimeMillis()
                     )
                 )

@@ -4,7 +4,6 @@ package com.example.android.shissona
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,11 +11,10 @@ import android.view.ViewGroup
 import com.example.android.shissona.database.AppDatabase
 import com.example.android.shissona.database.Expense
 import com.example.android.shissona.database.ExpenseDao
+import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.utils.ColorTemplate
-import kotlinx.android.synthetic.main.fragment_data.*
 import kotlinx.android.synthetic.main.fragment_data.view.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.support.v4.runOnUiThread
@@ -53,25 +51,53 @@ class DataFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        var totalAmount = 0
 
         doAsync {
-            val list = dataSource.getAll()
+            val list = dataSource.getAll().filter {
+                Util.getMonthAndYear(it.entryTime) == Util.getMonthAndYear(System.currentTimeMillis())
+            }
+//            val displayList = list.filter {
+//                Util.getMonthAndYear(it.entryTime) == Util.getMonthAndYear(System.currentTimeMillis())
+//            }
             runOnUiThread {
+                list.forEach {
+                    totalAmount += it.expensePrice
+                }
                 val pieEntries = ArrayList<PieEntry>()
                 chartList(list).forEach {
                     pieEntries.add(PieEntry(it.price.toFloat(), tagEquivalent(it.expenseType)))
+
                 }
 
                 val dataSet = PieDataSet(pieEntries, "Total Expenses")
                 dataSet.setColors(CHART_COLORS)
                 dataSet.valueTextSize = 14f
 
+                dataSet.setDrawValues(false)
+//                dataSet.sliceSpace = 100f
+
 
                 val data = PieData(dataSet)
 
-                view.chart.data = data
+                view.chart.apply {
+                    animateY(1000, Easing.EasingOption.EaseInOutCubic)
+                    isDrawHoleEnabled = true
+                    this.data = data
+                    centerText = "₦$totalAmount"
+                    setDrawEntryLabels(false)
+                    legend.isEnabled = false
+//                    holeRadius = 35f
+                    setCenterTextSize(14f)
+                    setDescription("")
+                }
+
+
+//                view.chart.setExtraOffsets(5f, 5f, 10f, 5f)
 
                 view.chart.invalidate()
+
+                view.dateTextView.text = Util.getMonthAndYear(System.currentTimeMillis())
             }
         }
 
@@ -120,10 +146,10 @@ class DataFragment : Fragment() {
             }
         }
         arrayHolder.forEachIndexed { index, price ->
-            if (price != 0) {
-                newList.add(ChartExpense(price, index))
 
-            }
+            newList.add(ChartExpense(price, index))
+
+
         }
         return newList
     }

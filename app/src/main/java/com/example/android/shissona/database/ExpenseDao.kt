@@ -23,4 +23,8 @@ interface ExpenseDao {
 
     @Query("DELETE FROM expense_table")
     fun clear()
+
+
+
+
 }
