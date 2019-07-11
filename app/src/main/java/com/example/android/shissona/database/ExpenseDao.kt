@@ -18,7 +18,7 @@ interface ExpenseDao {
     @Insert
     fun insert(vararg expense: Expense)
 
-    @Query("SELECT * FROM expense_table")
+    @Query("SELECT * FROM expense_table ORDER BY entryTime DESC")
     fun getAll(): List<Expense>
 
     @Query("DELETE FROM expense_table")

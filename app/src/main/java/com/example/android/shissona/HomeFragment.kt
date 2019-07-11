@@ -40,24 +40,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        val items = ArrayList<Item>()
-        items.add(Item(R.drawable.ic_home_black_24dp, "Home"))
-        items.add(Item(R.drawable.ic_baseline_fastfood_24px_2, "Food"))
-        items.add(Item(R.drawable.ic_directions_bus_black_24dp, "Transport"))
-        items.add(Item(R.drawable.ic_person_black_24dp, "Personal"))
-        items.add(Item(R.drawable.ic_phone_iphone_black_24dp, "Gadgets"))
-        items.add(Item(R.drawable.ic_directions_car_black_24dp, "Car"))
-        items.add(Item(R.drawable.ic_movie_black_24dp, "Entertainment"))
-        items.add(Item(R.drawable.ic_location_on_black_24dp, "Travel"))
-        items.add(Item(R.drawable.ic_local_hospital_black_24dp, "Health"))
-        items.add(Item(R.drawable.ic_pets_black_24dp, "Pets"))
-        items.add(Item(R.drawable.ic_card_giftcard_black_24dp, "Gift"))
-        items.add(Item(R.drawable.ic_receipt_black_24dp, "Bills"))
-
-
         Log.d("ares", "adapter about to be returned");
-        gridAdapter = GridAdapter(items, this@HomeFragment.requireActivity())
+        gridAdapter = GridAdapter(Util.ITEMS, this@HomeFragment.requireActivity())
         view.itemGridView.apply {
             adapter = gridAdapter
             setOnItemClickListener { parent, view, position, id ->

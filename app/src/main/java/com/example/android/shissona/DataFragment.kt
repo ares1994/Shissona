@@ -2,6 +2,8 @@ package com.example.android.shissona
 
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -73,13 +75,9 @@ class DataFragment : Fragment() {
                 val dataSet = PieDataSet(pieEntries, "Total Expenses")
                 dataSet.setColors(CHART_COLORS)
                 dataSet.valueTextSize = 14f
-
                 dataSet.setDrawValues(false)
 //                dataSet.sliceSpace = 100f
-
-
                 val data = PieData(dataSet)
-
                 view.chart.apply {
                     animateY(1000, Easing.EasingOption.EaseInOutCubic)
                     isDrawHoleEnabled = true
@@ -91,13 +89,19 @@ class DataFragment : Fragment() {
                     setCenterTextSize(14f)
                     setDescription("")
                 }
-
-
 //                view.chart.setExtraOffsets(5f, 5f, 10f, 5f)
-
                 view.chart.invalidate()
-
                 view.dateTextView.text = Util.getMonthAndYear(System.currentTimeMillis())
+
+                view.dataListView.adapter = ListAdapter(this@DataFragment.requireActivity(), list)
+                view.dataListView.setOnItemClickListener { parent, view, position, id ->
+                    AlertDialog.Builder(this@DataFragment.requireContext()).setMessage(list[position].description)
+                        .setPositiveButton("Done") { p0, p1 -> }.create().show()
+
+
+                }
+
+
             }
         }
 
