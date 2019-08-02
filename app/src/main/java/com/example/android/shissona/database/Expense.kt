@@ -12,7 +12,7 @@ data class Expense(
     val id: Int? = 0,
 
     @ColumnInfo
-    val expensePrice: Int,
+    val expensePrice: Float,
 
     @ColumnInfo
     val expenseType: Int,

@@ -21,12 +21,12 @@ class ListAdapter(context: Context, list: List<Expense>) : ArrayAdapter<Expense>
         val currentExpense = getItem(position)
 
         val newView = LayoutInflater.from(context).inflate(R.layout.item_data_list, parent, false)
-        newView.entryDateTextView.text = Util.getFullDateAndTime(currentExpense.entryTime)
-        doAsync {
+        newView.entryDateTextView.text = Util.getFullDateAndTime(currentExpense!!.entryTime)
+
             newView.itemsImageView.setImageResource(Util.ITEMS[currentExpense.expenseType].imageResource)
             Util.setColorTint(newView.itemsImageView, currentExpense.expenseType)
 
-        }
+
 
 
 

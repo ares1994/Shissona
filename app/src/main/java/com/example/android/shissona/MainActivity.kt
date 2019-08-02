@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        title=""
         val navController = this.findNavController(R.id.myNavHost)
 
         navController.addOnNavigatedListener { nc: NavController, nd: NavDestination ->

@@ -4,12 +4,14 @@ package com.example.android.shissona
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.startActivity
 import com.example.android.shissona.database.AppDatabase
 import com.example.android.shissona.database.Expense
 import com.example.android.shissona.database.ExpenseDao
@@ -17,13 +19,17 @@ import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_data.view.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.support.v4.runOnUiThread
+import java.text.NumberFormat
 
 
 class DataFragment : Fragment() {
     private lateinit var dataSource: ExpenseDao
+    private lateinit var list: List<Expense>
+    private var totalAmount: Float =0f
 
     private val CHART_COLORS = intArrayOf(
         Color.rgb(244, 67, 54),
@@ -44,7 +50,9 @@ class DataFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        (activity as AppCompatActivity).supportActionBar?.show()
 
+        setHasOptionsMenu(true)
         dataSource = AppDatabase.getInstance(container!!.context).expenseDao
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_data, container, false)
@@ -53,10 +61,10 @@ class DataFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        var totalAmount = 0
+
 
         doAsync {
-            val list = dataSource.getAll().filter {
+            list = dataSource.getAll().filter {
                 Util.getMonthAndYear(it.entryTime) == Util.getMonthAndYear(System.currentTimeMillis())
             }
 //            val displayList = list.filter {
@@ -68,7 +76,7 @@ class DataFragment : Fragment() {
                 }
                 val pieEntries = ArrayList<PieEntry>()
                 chartList(list).forEach {
-                    pieEntries.add(PieEntry(it.price.toFloat(), tagEquivalent(it.expenseType)))
+                    pieEntries.add(PieEntry(it.price.toFloat(), Util.ITEMS[it.expenseType].name))
 
                 }
 
@@ -82,7 +90,7 @@ class DataFragment : Fragment() {
                     animateY(1000, Easing.EasingOption.EaseInOutCubic)
                     isDrawHoleEnabled = true
                     this.data = data
-                    centerText = "₦$totalAmount"
+                    centerText = NumberFormat.getCurrencyInstance().format(totalAmount)
                     setDrawEntryLabels(false)
                     legend.isEnabled = false
 //                    holeRadius = 35f
@@ -95,7 +103,12 @@ class DataFragment : Fragment() {
 
                 view.dataListView.adapter = ListAdapter(this@DataFragment.requireActivity(), list)
                 view.dataListView.setOnItemClickListener { parent, view, position, id ->
-                    AlertDialog.Builder(this@DataFragment.requireContext()).setMessage(list[position].description)
+                    AlertDialog.Builder(this@DataFragment.requireContext())
+                        .setMessage(
+                            "Description: ${list[position].description}\n Cost: ${NumberFormat.getCurrencyInstance().format(
+                                list[position].expensePrice
+                            )}"
+                        )
                         .setPositiveButton("Done") { p0, p1 -> }.create().show()
 
 
@@ -108,45 +121,25 @@ class DataFragment : Fragment() {
 
     }
 
-    private fun tagEquivalent(type: Int): String {
-        var tag = ""
-        when (type) {
-            0 -> tag = "Home"
-            1 -> tag = "Food"
-            2 -> tag = "Transport"
-            3 -> tag = "Personal"
-            4 -> tag = "Gadgets"
-            5 -> tag = "Car"
-            6 -> tag = "Entertainment"
-            7 -> tag = "Travel"
-            8 -> tag = "Health"
-            9 -> tag = "Pets"
-            10 -> tag = "Gifts"
-            11 -> tag = "Bills"
-
-        }
-
-        return tag
-    }
 
     private fun chartList(list: List<Expense>): List<ChartExpense> {
-        val arrayHolder = mutableListOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        val arrayHolder = FloatArray(12)
         val newList = ArrayList<ChartExpense>()
 
         list.forEach {
             when (it.expenseType) {
-                0 -> arrayHolder[0] += it.expensePrice
-                1 -> arrayHolder[1] += it.expensePrice
-                2 -> arrayHolder[2] += it.expensePrice
-                3 -> arrayHolder[3] += it.expensePrice
-                4 -> arrayHolder[4] += it.expensePrice
-                5 -> arrayHolder[5] += it.expensePrice
-                6 -> arrayHolder[6] += it.expensePrice
-                7 -> arrayHolder[7] += it.expensePrice
-                8 -> arrayHolder[8] += it.expensePrice
-                9 -> arrayHolder[9] += it.expensePrice
-                10 -> arrayHolder[10] += it.expensePrice
-                11 -> arrayHolder[11] += it.expensePrice
+                0 -> arrayHolder[0] = arrayHolder[0] + it.expensePrice
+                1 -> arrayHolder[1] = arrayHolder[1] + it.expensePrice
+                2 -> arrayHolder[2] = arrayHolder[2] + it.expensePrice
+                3 -> arrayHolder[3] = arrayHolder[3] + it.expensePrice
+                4 -> arrayHolder[4] = arrayHolder[4] + it.expensePrice
+                5 -> arrayHolder[5] = arrayHolder[5] + it.expensePrice
+                6 -> arrayHolder[6] = arrayHolder[6] + it.expensePrice
+                7 -> arrayHolder[7] = arrayHolder[7] + it.expensePrice
+                8 -> arrayHolder[8] = arrayHolder[8] + it.expensePrice
+                9 -> arrayHolder[9] = arrayHolder[9] + it.expensePrice
+                10 -> arrayHolder[10] = arrayHolder[10] + it.expensePrice
+                11 -> arrayHolder[11] = arrayHolder[11] + it.expensePrice
             }
         }
         arrayHolder.forEachIndexed { index, price ->
@@ -158,4 +151,53 @@ class DataFragment : Fragment() {
         return newList
     }
 
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.data_overflow_menu, menu)
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_share -> {
+                AlertDialog.Builder(this@DataFragment.requireContext())
+                    .setMessage(getString(R.string.query))
+                    .setPositiveButton("Yes") { p0, p1 ->
+                        composeAndSendEmail()
+                    }.setNegativeButton("Cancel") { p0, p1 ->
+
+                    }
+                    .create().show()
+                return true
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun composeAndSendEmail() {
+
+        var expenseMessage = ""
+        list.forEach {
+            expenseMessage += getString(
+                R.string.expense,
+                Util.getFullDateAndTime(it.entryTime),
+                NumberFormat.getCurrencyInstance().format(it.expensePrice),
+                Util.ITEMS[it.expenseType].name
+            )
+        }
+        expenseMessage += getString(R.string.monthly_total,NumberFormat.getCurrencyInstance().format(totalAmount))
+        expenseMessage += getString(R.string.thank_you)
+        val intent = Intent(Intent.ACTION_SENDTO)
+        intent.data = Uri.parse("mailto:") // only email apps should handle this
+        intent.putExtra(
+            Intent.EXTRA_SUBJECT,
+            getString(R.string.email_subject, Util.getMonthAndYear(System.currentTimeMillis()))
+        )
+        intent.putExtra(Intent.EXTRA_TEXT, expenseMessage)
+        if (intent.resolveActivity(activity!!.packageManager) != null) {
+            startActivity(intent)
+        }
+    }
 }

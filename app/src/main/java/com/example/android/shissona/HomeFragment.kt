@@ -3,9 +3,11 @@ package com.example.android.shissona
 
 import android.content.Context
 import android.os.Bundle
+import android.text.InputFilter
 import android.util.Log
 import android.view.*
 import android.widget.GridView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
@@ -30,15 +32,19 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+
+        (activity as AppCompatActivity).supportActionBar?.hide()
         dataSource = AppDatabase.getInstance(container!!.context).expenseDao
 
+        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        expenseEditText.filters = arrayOf<InputFilter>(MoneyValueFilter())
 
         Log.d("ares", "adapter about to be returned");
         gridAdapter = GridAdapter(Util.ITEMS, this@HomeFragment.requireActivity())
@@ -67,7 +73,7 @@ class HomeFragment : Fragment() {
                 dataSource.insert(
                     Expense(
                         null,
-                        expenseEditText.text.toString().trim().toInt(),
+                        expenseEditText.text.toString().trim().toFloat(),
                         actualPosition,
                         detailsText,
                         System.currentTimeMillis()

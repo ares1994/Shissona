@@ -1,7 +1,7 @@
 package com.example.android.shissona
 
 data class ChartExpense(
-    val price: Int,
+    val price: Float,
 
     val expenseType: Int
 )
