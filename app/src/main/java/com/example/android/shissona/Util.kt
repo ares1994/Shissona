@@ -2,13 +2,11 @@ package com.example.android.shissona
 
 import android.annotation.SuppressLint
 import android.graphics.PorterDuff
-import android.view.View
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
-import kotlinx.android.synthetic.main.item_grid.view.*
 import java.text.SimpleDateFormat
 
-class Util() {
+class Util{
 
     companion object {
 
@@ -33,7 +31,7 @@ class Util() {
 
         }
 
-        fun setColorTint(view: ImageView, position: Int): Unit {
+        fun setColorTint(view: ImageView, position: Int) {
 
             when (position) {
                 0 -> view.setColorFilter(

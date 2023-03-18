@@ -4,31 +4,38 @@ package com.example.android.shissona
 import androidx.appcompat.app.AppCompatActivity
 
 import android.os.Bundle
-
-import androidx.drawerlayout.widget.DrawerLayout
-
-import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 
 import androidx.navigation.NavController
 
 import androidx.navigation.NavDestination
 
 import androidx.navigation.findNavController
-
-import kotlinx.android.synthetic.main.activity_main.*
+import com.example.android.shissona.databinding.ActivityMainBinding
 
 
 class MainActivity : AppCompatActivity() {
 
+    private var _binding : ActivityMainBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        _binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
+
+
+        setContentView(binding.root)
         title=""
         val navController = this.findNavController(R.id.myNavHost)
 
-        navController.addOnNavigatedListener { nc: NavController, nd: NavDestination ->
-            bottom_navigation.setOnNavigationItemSelectedListener {
+        navController.addOnDestinationChangedListener { _: NavController, nd: NavDestination, _ ->
+            binding.bottomNavigation.setOnNavigationItemSelectedListener {
 
                 if (nd.id == R.id.homeFragment) {
 

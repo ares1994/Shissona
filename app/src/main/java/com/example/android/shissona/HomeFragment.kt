@@ -1,31 +1,27 @@
 package com.example.android.shissona
 
-
-import android.content.Context
 import android.os.Bundle
 import android.text.InputFilter
 import android.util.Log
 import android.view.*
-import android.widget.GridView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import androidx.navigation.ui.NavigationUI
-import androidx.recyclerview.widget.GridLayoutManager
-import com.example.android.shissona.database.AppDatabase
-import com.example.android.shissona.database.Expense
-import com.example.android.shissona.database.ExpenseDao
+import com.example.android.shissona.databinding.FragmentHomeBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.android.synthetic.main.fragment_home.view.*
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.support.v4.act
-import org.jetbrains.anko.support.v4.runOnUiThread
 
 
 class HomeFragment : Fragment() {
 
-    private lateinit var dataSource: ExpenseDao
+    private var _binding : FragmentHomeBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+//    private lateinit var dataSource: ExpenseDao
     private lateinit var gridAdapter: GridAdapter
     private var actualPosition: Int = -1
     override fun onCreateView(
@@ -33,8 +29,8 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        (activity as AppCompatActivity).supportActionBar?.hide()
-        dataSource = AppDatabase.getInstance(container!!.context).expenseDao
+        (requireActivity() as AppCompatActivity).supportActionBar?.hide()
+//        dataSource = AppDatabase.getInstance(container!!.context).expenseDao
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false)
@@ -44,11 +40,13 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        expenseEditText.filters = arrayOf<InputFilter>(MoneyValueFilter())
+        _binding = FragmentHomeBinding.bind(view)
 
-        Log.d("ares", "adapter about to be returned");
+        binding.expenseEditText.filters = arrayOf<InputFilter>(MoneyValueFilter())
+
+        Log.d("ares", "adapter about to be returned")
         gridAdapter = GridAdapter(Util.ITEMS, this@HomeFragment.requireActivity())
-        view.itemGridView.apply {
+        binding.itemGridView.apply {
             adapter = gridAdapter
             setOnItemClickListener { parent, view, position, id ->
                 actualPosition = position
@@ -56,33 +54,33 @@ class HomeFragment : Fragment() {
 
             }
         }
-        view.expenseButton.setOnClickListener {
-            val detailsText: String = if (detailsEditText.text.isNullOrBlank()) {
+        binding.expenseButton.setOnClickListener {
+            val detailsText: String = if (binding.detailsEditText.text.isNullOrBlank()) {
                 "No details were entered for this expense"
             } else {
-                detailsEditText.text.toString().trim()
+                binding.detailsEditText.text.toString().trim()
             }
 
-            if (expenseEditText.text.isNullOrBlank() || actualPosition == -1) {
+            if (binding.expenseEditText.text.isNullOrBlank() || actualPosition == -1) {
                 Snackbar.make(it, "Enter Expense amount and select category ", Snackbar.LENGTH_LONG).show()
                 return@setOnClickListener
             }
 
 
             doAsync {
-                dataSource.insert(
-                    Expense(
-                        null,
-                        expenseEditText.text.toString().trim().toFloat(),
-                        actualPosition,
-                        detailsText,
-                        System.currentTimeMillis()
-                    )
-                )
+//                dataSource.insert(
+//                    Expense(
+//                        null,
+//                        binding.expenseEditText.text.toString().trim().toFloat(),
+//                        actualPosition,
+//                        detailsText,
+//                        System.currentTimeMillis()
+//                    )
+//                )
             }
             Snackbar.make(view, "Expense Recorded", Snackbar.LENGTH_SHORT).show()
-            expenseEditText.setText("")
-            detailsEditText.setText("")
+            binding.expenseEditText.setText("")
+            binding.detailsEditText.setText("")
 
         }
 

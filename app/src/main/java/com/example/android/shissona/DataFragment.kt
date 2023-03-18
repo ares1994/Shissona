@@ -3,7 +3,6 @@ package com.example.android.shissona
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -11,25 +10,29 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.startActivity
-import com.example.android.shissona.database.AppDatabase
 import com.example.android.shissona.database.Expense
-import com.example.android.shissona.database.ExpenseDao
+import com.example.android.shissona.databinding.FragmentDataBinding
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_data.view.*
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.support.v4.runOnUiThread
 import java.text.NumberFormat
 
 
 class DataFragment : Fragment() {
-    private lateinit var dataSource: ExpenseDao
-    private lateinit var list: List<Expense>
+//    private lateinit var dataSource: ExpenseDao
+    private var list: List<Expense> = emptyList()
     private var totalAmount: Float =0f
+
+    private var _binding : FragmentDataBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     private val CHART_COLORS = intArrayOf(
         Color.rgb(244, 67, 54),
@@ -53,7 +56,7 @@ class DataFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.show()
 
         setHasOptionsMenu(true)
-        dataSource = AppDatabase.getInstance(container!!.context).expenseDao
+//        dataSource = AppDatabase.getInstance(container!!.context).expenseDao
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_data, container, false)
     }
@@ -62,11 +65,12 @@ class DataFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        _binding = FragmentDataBinding.bind(view)
 
         doAsync {
-            list = dataSource.getAll().filter {
-                Util.getMonthAndYear(it.entryTime) == Util.getMonthAndYear(System.currentTimeMillis())
-            }
+//            list = dataSource.getAll().filter {
+//                Util.getMonthAndYear(it.entryTime) == Util.getMonthAndYear(System.currentTimeMillis())
+//            }
 //            val displayList = list.filter {
 //                Util.getMonthAndYear(it.entryTime) == Util.getMonthAndYear(System.currentTimeMillis())
 //            }
@@ -76,7 +80,7 @@ class DataFragment : Fragment() {
                 }
                 val pieEntries = ArrayList<PieEntry>()
                 chartList(list).forEach {
-                    pieEntries.add(PieEntry(it.price.toFloat(), Util.ITEMS[it.expenseType].name))
+                    pieEntries.add(PieEntry(it.price, Util.ITEMS[it.expenseType].name))
 
                 }
 
@@ -86,7 +90,7 @@ class DataFragment : Fragment() {
                 dataSet.setDrawValues(false)
 //                dataSet.sliceSpace = 100f
                 val data = PieData(dataSet)
-                view.chart.apply {
+                binding.chart.apply {
                     animateY(1000, Easing.EasingOption.EaseInOutCubic)
                     isDrawHoleEnabled = true
                     this.data = data
@@ -98,11 +102,11 @@ class DataFragment : Fragment() {
                     setDescription("")
                 }
 //                view.chart.setExtraOffsets(5f, 5f, 10f, 5f)
-                view.chart.invalidate()
-                view.dateTextView.text = Util.getMonthAndYear(System.currentTimeMillis())
+                binding.chart.invalidate()
+                binding.dateTextView.text = Util.getMonthAndYear(System.currentTimeMillis())
 
-                view.dataListView.adapter = ListAdapter(this@DataFragment.requireActivity(), list)
-                view.dataListView.setOnItemClickListener { parent, view, position, id ->
+                binding.dataListView.adapter = ListAdapter(requireContext(), list)
+                binding.dataListView.setOnItemClickListener { parent, view, position, id ->
                     AlertDialog.Builder(this@DataFragment.requireContext())
                         .setMessage(
                             "Description: ${list[position].description}\n Cost: ${NumberFormat.getCurrencyInstance().format(
@@ -196,7 +200,7 @@ class DataFragment : Fragment() {
             getString(R.string.email_subject, Util.getMonthAndYear(System.currentTimeMillis()))
         )
         intent.putExtra(Intent.EXTRA_TEXT, expenseMessage)
-        if (intent.resolveActivity(activity!!.packageManager) != null) {
+        if (intent.resolveActivity(requireActivity().packageManager) != null) {
             startActivity(intent)
         }
     }
