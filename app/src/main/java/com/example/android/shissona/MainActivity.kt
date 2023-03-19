@@ -9,8 +9,10 @@ import android.view.LayoutInflater
 import androidx.navigation.NavController
 
 import androidx.navigation.NavDestination
+import androidx.navigation.NavGraph.Companion.findStartDestination
 
 import androidx.navigation.findNavController
+import androidx.navigation.navOptions
 import com.example.android.shissona.databinding.ActivityMainBinding
 
 
@@ -34,39 +36,24 @@ class MainActivity : AppCompatActivity() {
         title=""
         val navController = this.findNavController(R.id.myNavHost)
 
-        navController.addOnDestinationChangedListener { _: NavController, nd: NavDestination, _ ->
-            binding.bottomNavigation.setOnNavigationItemSelectedListener {
-
-                if (nd.id == R.id.homeFragment) {
-
-                    if (it.itemId == R.id.toCharts) {
-
-                        navController.navigate(R.id.action_homeFragment_to_dataFragment)
-
-                    } else if (it.itemId == R.id.toAdd) {
-
-                        return@setOnNavigationItemSelectedListener false
-
-                    }
-
-                } else if (nd.id == R.id.dataFragment) {
-
-                    if (it.itemId == R.id.toAdd) {
-
-                        navController.navigate(R.id.action_dataFragment_to_homeFragment)
-
-                    } else if (it.itemId == R.id.toCharts) {
-
-                        return@setOnNavigationItemSelectedListener false
-                    }
-                }
-                return@setOnNavigationItemSelectedListener true
-            }
+        binding.bottomNavigation.setOnItemSelectedListener {
+            navigateTo(it.itemId, navController)
+            return@setOnItemSelectedListener true
         }
     }
 
 
+    private fun navigateTo(destinationId: Int, navController: NavController) {
+        val shouldSaveAndRestoreState = navController.currentDestination?.id != destinationId
+        navController.navigate(destinationId, null, navOptions {
+            launchSingleTop = true
+            restoreState = shouldSaveAndRestoreState
+            popUpTo(navController.graph.findStartDestination().id) {
+                saveState = shouldSaveAndRestoreState
+            }
+        })
 
+    }
 
 
 }

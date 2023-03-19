@@ -1,6 +1,7 @@
 package com.example.android.shissona.database
 
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 
 import androidx.room.Delete
@@ -20,6 +21,9 @@ interface ExpenseDao {
 
     @Query("SELECT * FROM expense_table ORDER BY entryTime DESC")
     fun getAll(): List<Expense>
+
+    @Query("SELECT * FROM expense_table ORDER BY entryTime DESC")
+    fun getReactiveAll(): LiveData<List<Expense>>
 
     @Query("DELETE FROM expense_table")
     fun clear()

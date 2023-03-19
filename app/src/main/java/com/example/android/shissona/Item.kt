@@ -1,7 +1,12 @@
 package com.example.android.shissona
 
-data class Item(
-    val imageResource: Int,
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
 
-    val name: String
+data class Item(
+    @DrawableRes
+    val imageResource: Int,
+    val name: String,
+    @ColorRes
+    val colorTint:Int,
 )
