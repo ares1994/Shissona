@@ -1,6 +1,7 @@
 package com.example.android.shissona
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
@@ -98,6 +99,21 @@ class Util{
             Item(R.drawable.ic_pets_black_24dp, "Pets",R.color.colorTen),
             Item(R.drawable.ic_card_giftcard_black_24dp, "Gift",R.color.colorEleven),
             Item(R.drawable.ic_receipt_black_24dp, "Bills",R.color.colorTwelve)
+        )
+
+        val CHART_COLORS = intArrayOf(
+            Color.rgb(244, 67, 54),
+            Color.rgb(103, 58, 183),
+            Color.rgb(63, 81, 181),
+            Color.rgb(76, 175, 80),
+            Color.rgb(255, 193, 7),
+            Color.rgb(0, 150, 136),
+            Color.rgb(233, 30, 99),
+            Color.rgb(33, 150, 243),
+            Color.rgb(213, 29, 29),
+            Color.rgb(205, 220, 57),
+            Color.rgb(156, 39, 176),
+            Color.rgb(233, 118, 30)
         )
 
     }

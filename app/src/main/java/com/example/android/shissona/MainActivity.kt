@@ -18,7 +18,7 @@ import com.example.android.shissona.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private var _binding : ActivityMainBinding? = null
+    private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
 
     override fun onDestroy() {
@@ -32,8 +32,8 @@ class MainActivity : AppCompatActivity() {
         _binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
 
 
+        supportActionBar?.title = "Shissona"
         setContentView(binding.root)
-        title=""
         val navController = this.findNavController(R.id.myNavHost)
 
         binding.bottomNavigation.setOnItemSelectedListener {

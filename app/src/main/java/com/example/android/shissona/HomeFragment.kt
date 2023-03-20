@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.example.android.shissona.databinding.FragmentHomeBinding
 import com.example.android.shissona.viewModels.HomeViewModel
 import kotlinx.coroutines.launch
@@ -54,8 +55,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     @Composable
     fun HomeComposable() {
         val scaffold = rememberScaffoldState()
-        val scope = rememberCoroutineScope()
-
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
@@ -152,7 +151,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     Button(
                         onClick = {
                             viewModel.insert()
-                            scope.launch {
+                            lifecycleScope.launch {
                                 scaffold.snackbarHostState.showSnackbar("Data Saved")
                             }
                         }, modifier = Modifier

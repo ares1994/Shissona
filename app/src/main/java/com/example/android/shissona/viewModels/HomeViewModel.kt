@@ -47,10 +47,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun insert() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-
-                Log.d("Ares",dao.getAll().toString())
-                return@withContext
-
                 dao.insert(
                     Expense(
                         null,

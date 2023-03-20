@@ -4,60 +4,43 @@ package com.example.android.shissona
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
+import com.example.android.shissona.Util.Companion.CHART_COLORS
 import com.example.android.shissona.database.Expense
 import com.example.android.shissona.databinding.FragmentDataBinding
+import com.example.android.shissona.viewModels.DataViewModel
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.support.v4.runOnUiThread
 import java.text.NumberFormat
 
 
 class DataFragment : Fragment() {
-//    private lateinit var dataSource: ExpenseDao
-    private var list: List<Expense> = emptyList()
-    private var totalAmount: Float =0f
-
-    private var _binding : FragmentDataBinding? = null
+    private var _binding: FragmentDataBinding? = null
     private val binding get() = _binding!!
+    private var triggerComposeEmail:(()->Unit)?=null
+
+    private val viewModel: DataViewModel by viewModels()
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-    private val CHART_COLORS = intArrayOf(
-        Color.rgb(244, 67, 54),
-        Color.rgb(103, 58, 183),
-        Color.rgb(63, 81, 181),
-        Color.rgb(76, 175, 80),
-        Color.rgb(255, 193, 7),
-        Color.rgb(0, 150, 136),
-        Color.rgb(233, 30, 99),
-        Color.rgb(33, 150, 243),
-        Color.rgb(213, 29, 29),
-        Color.rgb(205, 220, 57),
-        Color.rgb(156, 39, 176),
-        Color.rgb(233, 118, 30)
-    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        (activity as AppCompatActivity).supportActionBar?.show()
+
 
         setHasOptionsMenu(true)
-//        dataSource = AppDatabase.getInstance(container!!.context).expenseDao
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_data, container, false)
     }
 
@@ -66,63 +49,7 @@ class DataFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentDataBinding.bind(view)
-
-        doAsync {
-//            list = dataSource.getAll().filter {
-//                Util.getMonthAndYear(it.entryTime) == Util.getMonthAndYear(System.currentTimeMillis())
-//            }
-//            val displayList = list.filter {
-//                Util.getMonthAndYear(it.entryTime) == Util.getMonthAndYear(System.currentTimeMillis())
-//            }
-            runOnUiThread {
-                list.forEach {
-                    totalAmount += it.expensePrice
-                }
-                val pieEntries = ArrayList<PieEntry>()
-                chartList(list).forEach {
-                    pieEntries.add(PieEntry(it.price, Util.ITEMS[it.expenseType].name))
-
-                }
-
-                val dataSet = PieDataSet(pieEntries, "Total Expenses")
-                dataSet.setColors(CHART_COLORS)
-                dataSet.valueTextSize = 14f
-                dataSet.setDrawValues(false)
-//                dataSet.sliceSpace = 100f
-                val data = PieData(dataSet)
-                binding.chart.apply {
-                    animateY(1000, Easing.EasingOption.EaseInOutCubic)
-                    isDrawHoleEnabled = true
-                    this.data = data
-                    centerText = NumberFormat.getCurrencyInstance().format(totalAmount)
-                    setDrawEntryLabels(false)
-                    legend.isEnabled = false
-//                    holeRadius = 35f
-                    setCenterTextSize(14f)
-                    setDescription("")
-                }
-//                view.chart.setExtraOffsets(5f, 5f, 10f, 5f)
-                binding.chart.invalidate()
-                binding.dateTextView.text = Util.getMonthAndYear(System.currentTimeMillis())
-
-                binding.dataListView.adapter = ListAdapter(requireContext(), list)
-                binding.dataListView.setOnItemClickListener { parent, view, position, id ->
-                    AlertDialog.Builder(this@DataFragment.requireContext())
-                        .setMessage(
-                            "Description: ${list[position].description}\n Cost: ${NumberFormat.getCurrencyInstance().format(
-                                list[position].expensePrice
-                            )}"
-                        )
-                        .setPositiveButton("Done") { p0, p1 -> }.create().show()
-
-
-                }
-
-
-            }
-        }
-
-
+        setupObservers()
     }
 
 
@@ -168,7 +95,7 @@ class DataFragment : Fragment() {
                 AlertDialog.Builder(this@DataFragment.requireContext())
                     .setMessage(getString(R.string.query))
                     .setPositiveButton("Yes") { p0, p1 ->
-                        composeAndSendEmail()
+                        triggerComposeEmail?.invoke()
                     }.setNegativeButton("Cancel") { p0, p1 ->
 
                     }
@@ -180,7 +107,65 @@ class DataFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun composeAndSendEmail() {
+
+    private fun setupObservers() {
+        viewModel.getAllExpensesForTheMonth().observe(viewLifecycleOwner, Observer { list ->
+                val pieEntries = ArrayList<PieEntry>()
+                chartList(list).forEach {
+                    pieEntries.add(PieEntry(it.price, Util.ITEMS[it.expenseType].name))
+
+                }
+
+                triggerComposeEmail = {
+                    composeAndSendEmail(list)
+                }
+
+                val dataSet = PieDataSet(pieEntries, "Total Expenses")
+                dataSet.setColors(CHART_COLORS)
+                dataSet.valueTextSize = 14f
+                dataSet.setDrawValues(false)
+//                dataSet.sliceSpace = 100f
+                val data = PieData(dataSet)
+                binding.chart.apply {
+                    animateY(1000, Easing.EasingOption.EaseInOutCubic)
+                    isDrawHoleEnabled = true
+                    this.data = data
+                    centerText = NumberFormat.getCurrencyInstance()
+                        .format(list.map { it.expensePrice }.reduce { acc, expense ->
+                            acc + expense
+                        })
+                    setDrawEntryLabels(false)
+                    legend.isEnabled = false
+//                    holeRadius = 35f
+                    setCenterTextSize(14f)
+                    setDescription("")
+                }
+//                view.chart.setExtraOffsets(5f, 5f, 10f, 5f)
+                binding.chart.invalidate()
+                binding.dateTextView.text = Util.getMonthAndYear(System.currentTimeMillis())
+
+                binding.dataListView.adapter = ListAdapter(requireContext(), list)
+                binding.dataListView.setOnItemClickListener { _, _, position, id ->
+                    AlertDialog.Builder(this@DataFragment.requireContext())
+                        .setMessage(
+                            "Description: ${list[position].description}\n Cost: ${
+                                NumberFormat.getCurrencyInstance().format(
+                                    list[position].expensePrice
+                                )
+                            }"
+                        )
+                        .setPositiveButton("Done") { p0, p1 -> }.create().show()
+
+
+                }
+        })
+    }
+
+
+
+
+
+    private fun composeAndSendEmail(list: List<Expense>) {
 
         var expenseMessage = ""
         list.forEach {
@@ -191,7 +176,12 @@ class DataFragment : Fragment() {
                 Util.ITEMS[it.expenseType].name
             )
         }
-        expenseMessage += getString(R.string.monthly_total,NumberFormat.getCurrencyInstance().format(totalAmount))
+        expenseMessage += getString(
+            R.string.monthly_total,
+            NumberFormat.getCurrencyInstance().format(list.map { it.expensePrice }.reduce { acc, expense ->
+                acc + expense
+            })
+        )
         expenseMessage += getString(R.string.thank_you)
         val intent = Intent(Intent.ACTION_SENDTO)
         intent.data = Uri.parse("mailto:") // only email apps should handle this
