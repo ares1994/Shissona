@@ -6,7 +6,6 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -89,22 +88,24 @@ class DataFragment : Fragment() {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             itemsIndexed(list) { _, item ->
                 MaterialTheme() {
-                    Column(modifier = Modifier.fillMaxWidth().clickable {
-                        AlertDialog
-                            .Builder(this@DataFragment.requireContext())
-                            .setMessage(
-                                "Description: ${item.description}\n Cost: ${
-                                    NumberFormat
-                                        .getCurrencyInstance()
-                                        .format(
-                                            item.expensePrice
-                                        )
-                                }"
-                            )
-                            .setPositiveButton("Done") { _, _ -> composeAndSendEmail(list)}
-                            .create()
-                            .show()
-                    }) {
+                    Column(modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            AlertDialog
+                                .Builder(this@DataFragment.requireContext())
+                                .setMessage(
+                                    "Description: ${item.description}\n Cost: ${
+                                        NumberFormat
+                                            .getCurrencyInstance()
+                                            .format(
+                                                item.expensePrice
+                                            )
+                                    }"
+                                )
+                                .setPositiveButton("Done") { _, _ ->  }
+                                .create()
+                                .show()
+                        }) {
 
                         Row(
                             modifier = Modifier
@@ -214,7 +215,7 @@ class DataFragment : Fragment() {
 
                     }
 
-                    triggerComposeEmail={
+                    triggerComposeEmail = {
                         composeAndSendEmail(list)
                     }
 
@@ -249,15 +250,15 @@ class DataFragment : Fragment() {
     }
 
 
-    private fun composeAndSendEmail(list: List<Expense>) {
-        Log.d("Ares",list.toString())
+    private fun composeAndSendEmail(value: List<Expense>) {
+        val list = value.reversed()
         var expenseMessage = ""
         list.forEach {
             expenseMessage += getString(
                 R.string.expense,
                 Util.getFullDateAndTime(it.entryTime),
                 NumberFormat.getCurrencyInstance().format(it.expensePrice),
-                Util.ITEMS[it.expenseType].name
+                ITEMS[it.expenseType].name
             )
         }
         expenseMessage += getString(
@@ -268,15 +269,18 @@ class DataFragment : Fragment() {
                 })
         )
         expenseMessage += getString(R.string.thank_you)
-        val intent = Intent(Intent.ACTION_SENDTO)
-        intent.data = Uri.parse("mailto:") // only email apps should handle this
-        intent.putExtra(
-            Intent.EXTRA_SUBJECT,
-            getString(R.string.email_subject, Util.getMonthAndYear(System.currentTimeMillis()))
-        )
+        val intent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:") // only email apps should handle this
+            putExtra(
+                Intent.EXTRA_SUBJECT,
+                getString(R.string.email_subject, Util.getMonthAndYear(System.currentTimeMillis()))
+            )
+            putExtra(Intent.EXTRA_TEXT, expenseMessage)
+            putExtra("body",expenseMessage)
+        }
 
-        Log.d("Ares",expenseMessage)
-        intent.putExtra(Intent.EXTRA_TEXT, expenseMessage)
-        Intent.createChooser(intent,"Send Budget Details")
+        requireActivity().startActivity(
+            Intent.createChooser(intent, "Send Budget Details to...")
+                .apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) })
     }
 }
