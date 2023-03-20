@@ -64,18 +64,5 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun getAll() {
-        viewModelScope.launch {
-
-            withContext(Dispatchers.IO) {
-                try {
-                    Log.d("Ares", dao.getAll().toString())
-                } catch (t: Throwable) {
-                    Log.d("Ares", "it failed because ${t.message}")
-                }
-            }
-        }
-    }
-
 
 }

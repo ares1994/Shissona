@@ -1,6 +1,7 @@
 package com.example.android.shissona
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -26,6 +27,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.android.shissona.databinding.FragmentHomeBinding
 import com.example.android.shissona.viewModels.HomeViewModel
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -78,7 +80,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
 
                     CustomTextField(value = amount, onChange = {
-                        viewModel.setAmount(it)
+                        viewModel.setAmount(it.filter { it.isDigit() })
                     }, label = "Enter Expense Amount", keyboardType = KeyboardType.Number)
 
 
@@ -150,6 +152,27 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 ) {
                     Button(
                         onClick = {
+                            if (details.isBlank()){
+                                lifecycleScope.launch {
+                                    scaffold.snackbarHostState.showSnackbar("Please provide a description")
+                                }
+                                return@Button
+                            }
+                            if (amount.isBlank()){
+                                lifecycleScope.launch {
+                                    scaffold.snackbarHostState.showSnackbar("Please provide an amount")
+                                }
+                                return@Button
+                            }
+
+                            if(selectedIndex == -1){
+                                lifecycleScope.launch {
+                                    scaffold.snackbarHostState.showSnackbar("Please select a category")
+                                }
+                                return@Button
+                            }
+
+
                             viewModel.insert()
                             lifecycleScope.launch {
                                 scaffold.snackbarHostState.showSnackbar("Data Saved")
