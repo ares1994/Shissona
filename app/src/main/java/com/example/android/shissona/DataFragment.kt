@@ -230,14 +230,17 @@ class DataFragment : Fragment() {
                         isDrawHoleEnabled = true
                         this.data = data
                         centerText = NumberFormat.getCurrencyInstance()
-                            .format(list.map { it.expensePrice }.reduce { acc, expense ->
-                                acc + expense
-                            })
+                            .format(try {
+                                list.map { it.expensePrice }.reduce { acc, expense ->
+                                    acc + expense
+                                }
+                            }catch (_:Throwable){0})
                         setDrawEntryLabels(false)
                         legend.isEnabled = false
 //                    holeRadius = 35f
                         setCenterTextSize(14f)
                         setDescription("")
+
                     }
                     binding.chart.invalidate()
                     binding.dateTextView.text = Util.getMonthAndYear(System.currentTimeMillis())

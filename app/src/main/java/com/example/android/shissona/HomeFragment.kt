@@ -14,7 +14,10 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -30,29 +33,25 @@ import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 
 
-class HomeFragment : Fragment(R.layout.fragment_home) {
+class HomeFragment : Fragment() {
 
-    private var _binding: FragmentHomeBinding? = null
-    private val binding get() = _binding!!
+    private val viewModel:HomeViewModel by viewModels()
 
-    private val viewModel: HomeViewModel by viewModels()
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        _binding = FragmentHomeBinding.bind(view)
-
-
-        binding.composeView.setContent {
-            HomeComposable()
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                HomeComposable()
+            }
         }
     }
+
 
     @Composable
     fun HomeComposable() {
@@ -60,13 +59,16 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         Scaffold(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 50.dp),
+                .background(Color(0xFFf8f8f8))
+                .padding(bottom = 80.dp, top = 16.dp, start = 16.dp, end = 16.dp)
+            ,
             scaffoldState = scaffold
         ) {
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(Color(0xFFf8f8f8))
                     .padding(it)
             ) {
                 val amount by viewModel.amount.collectAsState()
@@ -75,6 +77,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 Column(
                     modifier = Modifier
                         .weight(1f)
+                        .background(Color(0xFFf8f8f8))
                         .verticalScroll(rememberScrollState())
                 ) {
 
@@ -92,7 +95,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                             RoundedCornerShape(15.dp)
                         )
                         .padding(vertical = 16.dp)
-                        .heightIn(0.dp, 400.dp), columns = GridCells.Fixed(4), content = {
+                        .heightIn(0.dp, 300.dp), columns = GridCells.Fixed(4), content = {
                         itemsIndexed(Util.ITEMS) { index, item ->
 
                             val modifier = Modifier.border(
