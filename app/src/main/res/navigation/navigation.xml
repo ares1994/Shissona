@@ -8,12 +8,12 @@
 
     <fragment
             android:id="@+id/homeFragment"
-            android:name="com.example.android.shissona.HomeFragment"
+            android:name="com.arepadeobiri.android.shissona.HomeFragment"
             android:label="fragment_home"
             tools:layout="@layout/fragment_home"/>
     <fragment
             android:id="@+id/dataFragment"
-            android:name="com.example.android.shissona.DataFragment"
+            android:name="com.arepadeobiri.android.shissona.DataFragment"
             android:label="Shissona"
             tools:layout="@layout/fragment_data" />
 </navigation>
